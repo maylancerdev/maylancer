@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Documentation;
-use CzProject\GitPhp\Git as GitRepository;
+use App\Services\Git as GitRepository;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
