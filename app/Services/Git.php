@@ -7,6 +7,7 @@
     use CzProject\GitPhp\Helpers;
     use CzProject\GitPhp\IRunner;
     use CzProject\GitPhp\RunnerResult;
+    use CzProject\GitPhp\Runners\CliRunner;
 
     class Git
 	{
@@ -16,7 +17,7 @@
 
 		public function  __construct(IRunner $runner = NULL)
 		{
-			$this->runner = $runner !== NULL ? $runner : new Runners\CliRunner;
+			$this->runner = $runner !== NULL ? $runner : new CliRunner;
 		}
 
 
