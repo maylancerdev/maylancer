@@ -9,13 +9,13 @@
     <x-home-about-blocks />
 
     <!-- Features products -->
-    <x-home-selection :products="$products" />
+    <x-home-selection :$products />
 
     <!-- Hire  Team -->
     <x-home-hire />
 
     <!-- Testimonials -->
-    <x-home-testimonials :groupedTestimonies="$groupedTestimonies" />
+    <x-home-testimonials :$groupedTestimonies />
 
     <!-- Newsletter-->
     <x-home-newsletter />
