@@ -478,8 +478,8 @@
 		 */
 		public function pull($remote = NULL, array $options = NULL)
 		{
-			$this->run('pull', $options, '--end-of-options', $remote);
-			return $this;
+            $this->run('pull');
+            return $this;
 		}
 
 
