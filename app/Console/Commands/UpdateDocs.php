@@ -67,10 +67,11 @@ class UpdateDocs extends Command
     protected function updateDoc($doc, $version = null)
     {
 
-        $this->cleanRepositoryFolders();
-
         $path = config('docs.path');
+        $this->cleanRepositoryFolders();
         $git = new GitRepository;
+
+
 
 
         if (! $data = Arr::get($this->docs->getDocs(), $doc)) {
