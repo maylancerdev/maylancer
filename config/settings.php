@@ -16,7 +16,7 @@ return [
     'social' =>  [
         ['value' => 'https://github.com/maylancerdev', 'name' => 'github', 'label' => 'Github'],
         ['value' => 'https://twitter.com/maylancer', 'name' => 'twitter', 'label' => 'Twitter'],
-        ['value' => 'https://youtube.com/maylancer', 'name' => 'youtube', 'label' => 'YouTube'],
+        ['value' => 'https://youtube.com/@maylancer', 'name' => 'youtube', 'label' => 'YouTube'],
         ['value' => 'https://instagram.com/maylancer', 'name' => 'instagram', 'label' => 'Instagram'],
     ],
 
