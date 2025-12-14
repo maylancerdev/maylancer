@@ -215,10 +215,13 @@ class DocsController extends Controller
 
             // Section header (starts with - but no link)
             if (preg_match('/^-\s+(.+)/', $line, $matches) && !str_contains($line, '[')) {
-                $currentSection = trim($matches[1]);
+                $sectionTitle = trim($matches[1]);
+                // Normalize section name to slug format (lowercase with hyphens)
+                $currentSection = strtolower(str_replace(' ', '-', $sectionTitle));
                 $structure[$currentSection] = [
                     'order' => $sectionOrder++,
-                    'pages' => []
+                    'pages' => [],
+                    'title' => $sectionTitle // Store original title for display
                 ];
                 $pageOrder = 0;
             }
@@ -455,7 +458,9 @@ class DocsController extends Controller
                 // Section with title and pages (collapsible)
                 $data = $item['data'];
                 $section = $item['section'];
-                $sectionTitle = $data['_index']->title ?? $this->formatSlugToTitle($section);
+                $sectionTitle = $data['_index']->title
+                    ?? $tocStructure[$section]['title']
+                    ?? $this->formatSlugToTitle($section);
                 $sectionId = 'section-' . str_replace(' ', '-', strtolower($sectionTitle));
 
                 $html .= '<div class="mb-4">';
