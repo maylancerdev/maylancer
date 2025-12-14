@@ -1,4 +1,4 @@
-<nav class="flex py-3 border-b border-gray-200 dark:border-slate-800" aria-label="Breadcrumb">
+<nav class="hidden md:flex py-3 border-b border-gray-200 dark:border-slate-800" aria-label="Breadcrumb">
     <ol role="list" class="flex items-center space-x-2 text-sm">
         <li>
             <a href="{{ route('docs.index')}}" class="text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors font-medium">
