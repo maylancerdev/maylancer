@@ -130,7 +130,10 @@ class DocsController extends Controller
 
         $repositories = $docs->getRepositories();
 
-        $navigation = $this->getNavigation($pages);
+        // Get TOC structure from toc.md file
+        $tocStructure = $this->parseTocFile($alias);
+
+        $navigation = $this->getNavigation($pages, $tocStructure);
 
         $prevPage = $this->getPrevPage($page, $navigation);
         $nextPage = $this->getNextPage($page, $navigation);
@@ -146,7 +149,7 @@ class DocsController extends Controller
         }
 
         // Generate TOC HTML for sidebar backward compatibility
-        $toc = $this->generateTocHtml($navigation, $page, $repository, $alias);
+        $toc = $this->generateTocHtml($navigation, $page, $repository, $alias, $tocStructure);
 
         return view('frontpage.docs.show', [
             'page' => $page,
@@ -174,20 +177,118 @@ class DocsController extends Controller
         ]);
     }
 
-    private function getNavigation(Collection $pages): Collection
+    private function parseTocFile(Alias $alias): array
+    {
+        $tocPath = storage_path("docs/{$alias->repository}/{$alias->slug}/toc.md");
+
+        if (!file_exists($tocPath)) {
+            return [];
+        }
+
+        $tocContent = file_get_contents($tocPath);
+        $lines = explode("\n", $tocContent);
+
+        $structure = [];
+        $currentSection = null;
+        $sectionOrder = 0;
+        $pageOrder = 0;
+
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if (empty($line)) {
+                continue;
+            }
+
+            // Section header (starts with - but no link)
+            if (preg_match('/^-\s+(.+)/', $line, $matches) && !str_contains($line, '[')) {
+                $currentSection = trim($matches[1]);
+                $structure[$currentSection] = [
+                    'order' => $sectionOrder++,
+                    'pages' => []
+                ];
+                $pageOrder = 0;
+            }
+            // Page link (contains [Title](path.md))
+            elseif (preg_match('/\[([^\]]+)\]\(([^\)]+)\)/', $line, $matches)) {
+                $title = $matches[1];
+                $path = str_replace('.md', '', $matches[2]);
+
+                $section = $currentSection ?? '_root';
+
+                if (!isset($structure[$section])) {
+                    $structure[$section] = [
+                        'order' => $sectionOrder++,
+                        'pages' => []
+                    ];
+                }
+
+                $structure[$section]['pages'][$path] = [
+                    'title' => $title,
+                    'order' => $pageOrder++
+                ];
+            }
+        }
+
+        return $structure;
+    }
+
+    private function getNavigation(Collection $pages, array $tocStructure): Collection
     {
         $navigation = $pages
-            ->reduce(function (array $navigation, DocumentationPage $page) {
+            ->reduce(function (array $navigation, DocumentationPage $page) use ($tocStructure) {
+                $section = $page->isIndex() ? $page->section : $page->section;
+
                 if ($page->isIndex()) {
-                    $navigation[$page->section]['_index'] = $page;
+                    $navigation[$section]['_index'] = $page;
                 } else {
-                    $navigation[$page->section]['pages'][] = $page;
+                    $navigation[$section]['pages'][] = $page;
                 }
 
                 return $navigation;
             }, []);
 
-        return collect($navigation)->sortBy(fn (array $pages) => $pages['_index']->weight ?? -1);
+        // Sort sections based on TOC structure or weight
+        $sortedNavigation = collect($navigation)->sortBy(function (array $data, string $section) use ($tocStructure) {
+            // Check if section has explicit weight from front matter
+            if (isset($data['_index']->weight)) {
+                return $data['_index']->weight;
+            }
+
+            // Use TOC structure order if available
+            if (isset($tocStructure[$section]['order'])) {
+                return $tocStructure[$section]['order'];
+            }
+
+            // Default to high number to put at end
+            return 9999;
+        });
+
+        // Sort pages within each section based on TOC structure or weight
+        $sortedNavigation = $sortedNavigation->map(function (array $data, string $section) use ($tocStructure) {
+            if (!isset($data['pages'])) {
+                return $data;
+            }
+
+            $data['pages'] = collect($data['pages'])->sortBy(function (DocumentationPage $page) use ($tocStructure, $section) {
+                // Check if page has explicit weight from front matter
+                if (isset($page->weight)) {
+                    return $page->weight;
+                }
+
+                // Use TOC structure order if available
+                if (isset($tocStructure[$section]['pages'][$page->slug]['order'])) {
+                    return $tocStructure[$section]['pages'][$page->slug]['order'];
+                }
+
+                // Default to high number to put at end
+                return 9999;
+            })->values()->all();
+
+            return $data;
+        });
+
+        return $sortedNavigation;
     }
 
     private function extractTableOfContents(string $contents)
@@ -295,7 +396,7 @@ class DocsController extends Controller
         return $nextPage;
     }
 
-    private function generateTocHtml(Collection $navigation, DocumentationPage $currentPage, $repository, Alias $alias): string
+    private function generateTocHtml(Collection $navigation, DocumentationPage $currentPage, $repository, Alias $alias, array $tocStructure): string
     {
         $html = '';
 
@@ -310,7 +411,11 @@ class DocsController extends Controller
                         : 'text-gray-900 dark:text-gray-100 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-slate-800';
 
                     $url = route('docs.show', [$repository->slug, $alias->slug, $page->slug]);
-                    $pageTitle = $page->title ?? $this->formatSlugToTitle($page->slug);
+
+                    // Use title from TOC structure if available, otherwise use page title or format slug
+                    $pageTitle = $tocStructure[$section]['pages'][$page->slug]['title']
+                        ?? $page->title
+                        ?? $this->formatSlugToTitle($page->slug);
 
                     $html .= sprintf(
                         '<li><a href="%s" class="%s text-base block px-3 py-2 rounded-md">%s</a></li>',
@@ -339,7 +444,11 @@ class DocsController extends Controller
                         : 'text-gray-900 dark:text-gray-100 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-slate-800';
 
                     $url = route('docs.show', [$repository->slug, $alias->slug, $page->slug]);
-                    $pageTitle = $page->title ?? $this->formatSlugToTitle($page->slug);
+
+                    // Use title from TOC structure if available, otherwise use page title or format slug
+                    $pageTitle = $tocStructure[$section]['pages'][$page->slug]['title']
+                        ?? $page->title
+                        ?? $this->formatSlugToTitle($page->slug);
 
                     $html .= sprintf(
                         '<li><a href="%s" class="%s text-base block px-3 py-2 rounded-md">%s</a></li>',
