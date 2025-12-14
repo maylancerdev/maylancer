@@ -131,7 +131,7 @@ class DocsController extends Controller
         $repositories = $docs->getRepositories();
 
         // Get TOC structure from toc.md file
-        $tocStructure = $this->parseTocFile($alias);
+        $tocStructure = $this->parseTocFile($repository->slug, $alias->slug);
 
         $navigation = $this->getNavigation($pages, $tocStructure);
 
@@ -177,9 +177,9 @@ class DocsController extends Controller
         ]);
     }
 
-    private function parseTocFile(Alias $alias): array
+    private function parseTocFile(string $repository, string $alias): array
     {
-        $tocPath = storage_path("docs/{$alias->repository}/{$alias->slug}/toc.md");
+        $tocPath = storage_path("docs/{$repository}/{$alias}/toc.md");
 
         if (!file_exists($tocPath)) {
             return [];
