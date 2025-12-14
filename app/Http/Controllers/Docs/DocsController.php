@@ -309,7 +309,7 @@ class DocsController extends Controller
         // Use Spatie Laravel Markdown with Shiki highlighting
         // Create a fresh instance with custom configuration
         $renderer = (new \Spatie\LaravelMarkdown\MarkdownRenderer())
-            ->highlightTheme('github-dark')
+            ->highlightTheme('github-light')
             ->renderAnchors(true);
 
         // Add custom inline renderers for images and links
@@ -436,25 +436,14 @@ class DocsController extends Controller
                     ?? $this->formatSlugToTitle($section);
                 $sectionId = 'section-' . str_replace(' ', '-', strtolower($sectionTitle));
 
-                // Check if current page is in this section
-                $isCurrentSection = false;
-                foreach ($data['pages'] as $p) {
-                    if ($p->slug === $currentPage->slug) {
-                        $isCurrentSection = true;
-                        break;
-                    }
-                }
-
                 $html .= '<div class="mb-4">';
                 $html .= '<button type="button" class="flex items-center w-full text-left px-3 py-2 text-base font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800 rounded-md" onclick="toggleSection(\'' . $sectionId . '\')">';
-                // Arrow rotates based on whether section is expanded
-                $arrowRotation = $isCurrentSection ? '' : 'style="transform: rotate(-90deg)"';
-                $html .= '<svg class="w-4 h-4 mr-2 transition-transform section-arrow" id="' . $sectionId . '-arrow" ' . $arrowRotation . ' fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
+                // All sections open by default, arrow pointing down
+                $html .= '<svg class="w-4 h-4 mr-2 transition-transform section-arrow" id="' . $sectionId . '-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
                 $html .= e($sectionTitle);
                 $html .= '</button>';
-                // Section is hidden unless it contains the current page
-                $sectionClass = $isCurrentSection ? 'mt-1 space-y-0.5 ml-5' : 'mt-1 space-y-0.5 ml-5 hidden';
-                $html .= '<ul class="' . $sectionClass . '" id="' . $sectionId . '">';
+                // All sections visible by default
+                $html .= '<ul class="mt-1 space-y-0.5 ml-5" id="' . $sectionId . '">';
 
                 foreach ($data['pages'] as $page) {
                     $isActive = $page->slug === $currentPage->slug;
