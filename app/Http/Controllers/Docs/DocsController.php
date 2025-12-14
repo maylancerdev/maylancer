@@ -302,14 +302,23 @@ class DocsController extends Controller
 
     private function renderMarkdown(string $contents): string
     {
-        // Use the configured markdown renderer (includes Torchlight for syntax highlighting)
-        $renderer = app(\Spatie\LaravelMarkdown\MarkdownRenderer::class);
+        // Build CommonMark environment with all configured extensions
+        $config = config('markdown');
+
+        $environment = new Environment($config);
+
+        // Add all configured extensions
+        foreach ($config['extensions'] as $extension) {
+            $environment->addExtension(new $extension());
+        }
 
         // Add custom inline renderers for images and links
-        $renderer->addInlineRenderer(Image::class, new ImageRenderer());
-        $renderer->addInlineRenderer(Link::class, new LinkRenderer());
+        $environment->addRenderer(Image::class, new ImageRenderer());
+        $environment->addRenderer(Link::class, new LinkRenderer());
 
-        return $renderer->toHtml($contents);
+        $converter = new MarkdownConverter($environment);
+
+        return $converter->convert($contents)->getContent();
     }
 
     private function getPrevPage(DocumentationPage $currentPage, Collection $navigation): ?DocumentationPage
