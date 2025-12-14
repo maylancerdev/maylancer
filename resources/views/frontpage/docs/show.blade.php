@@ -36,15 +36,15 @@
 
         <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex">
-                <!-- Left Sidebar - Navigation -->
+                <!-- Mobile Sidebar (Slide-in) -->
                 <aside
-                    x-bind:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                    class="fixed lg:static top-0 left-0 z-50 lg:z-auto w-72 h-screen lg:h-auto overflow-y-auto border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transform lg:transform-none transition-transform duration-300 ease-in-out lg:block"
+                    x-bind:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+                    class="lg:hidden fixed top-0 left-0 z-50 w-72 h-screen overflow-y-auto border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transform transition-transform duration-300 ease-in-out"
                 >
-                    <!-- Close Button (Mobile Only) -->
+                    <!-- Close Button -->
                     <button
                         @click="sidebarOpen = false"
-                        class="lg:hidden absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        class="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         aria-label="Close navigation menu"
                     >
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,6 +52,11 @@
                         </svg>
                     </button>
 
+                    @include('frontpage.docs.partials.sidebar')
+                </aside>
+
+                <!-- Desktop Sidebar (Always Visible) -->
+                <aside class="hidden lg:block w-72 border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 h-screen overflow-y-auto">
                     @include('frontpage.docs.partials.sidebar')
                 </aside>
 
