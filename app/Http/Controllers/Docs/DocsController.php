@@ -45,9 +45,11 @@ class DocsController extends Controller
         abort_if(is_null($repository), 404, 'Repository not found');
 
         if ($alias) {
-            preg_match('/v\d+/', $alias, $matches);
+            // Check if alias is a valid version (v1, v2, latest, etc.)
+            $validAlias = $repository->getAlias($alias);
 
-            if (! count($matches)) {
+            if (! $validAlias) {
+                // Alias is not a version, treat it as a page slug
                 $latest = $repository->aliases->keys()->first();
                 $slug = $alias;
                 $alias = $latest;
@@ -55,9 +57,7 @@ class DocsController extends Controller
                 return redirect()->action([DocsController::class, 'show'], [$repository->slug, $alias, $slug]);
             }
 
-            $alias = $repository->getAlias($alias);
-
-            abort_if(is_null($alias), 404, 'Alias not found');
+            $alias = $validAlias;
         } else {
             $alias = $repository->aliases->first();
         }
@@ -89,9 +89,11 @@ class DocsController extends Controller
             abort(404, 'Repository not found');
         }
 
-        preg_match('/v\d+/', $alias, $matches);
+        // Check if alias is a valid version (v1, v2, latest, etc.)
+        $validAlias = $repository->getAlias($alias);
 
-        if (! count($matches)) {
+        if (! $validAlias) {
+            // Alias is not a version, treat it as part of the slug
             $latest = $repository->aliases->keys()->first();
             $slug = "{$alias}/{$slug}";
             $alias = $latest;
@@ -101,13 +103,7 @@ class DocsController extends Controller
 
         abort_if(is_null($repository), 404, 'Repository not found');
 
-        $alias = $repository->getAlias($alias);
-
-        if (! $alias) {
-            $alias = $repository->aliases->keys()->first();
-
-            return redirect()->action([DocsController::class, 'show'], [$repository->slug, $alias, $slug]);
-        }
+        $alias = $validAlias;
 
         /** @var Collection $pages */
         $pages = $alias->pages->filter(function ($page) {
