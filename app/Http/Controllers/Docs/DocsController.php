@@ -398,35 +398,64 @@ class DocsController extends Controller
 
     private function generateTocHtml(Collection $navigation, DocumentationPage $currentPage, $repository, Alias $alias, array $tocStructure): string
     {
-        $html = '';
+        $html = '<div class="space-y-0.5">';
 
+        // Combine root pages and sections into a single sortable array
+        $items = [];
+
+        // Add root pages
+        if (isset($navigation['_root']['pages'])) {
+            foreach ($navigation['_root']['pages'] as $page) {
+                $items[] = [
+                    'type' => 'page',
+                    'weight' => $page->weight ?? 9999,
+                    'data' => $page,
+                    'section' => '_root'
+                ];
+            }
+        }
+
+        // Add sections
         foreach ($navigation as $section => $data) {
-            if ($section === '_root') {
-                // Root pages (without section)
-                $html .= '<ul class="space-y-0.5 mb-4">';
-                foreach ($data['pages'] as $page) {
-                    $isActive = $page->slug === $currentPage->slug;
-                    $activeClass = $isActive
-                        ? 'text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-900/20'
-                        : 'text-gray-900 dark:text-gray-100 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-slate-800';
+            if ($section !== '_root') {
+                $items[] = [
+                    'type' => 'section',
+                    'weight' => $data['_index']->weight ?? 9999,
+                    'data' => $data,
+                    'section' => $section
+                ];
+            }
+        }
 
-                    $url = route('docs.show', [$repository->slug, $alias->slug, $page->slug]);
+        // Sort all items by weight
+        usort($items, fn($a, $b) => $a['weight'] <=> $b['weight']);
 
-                    // Use title from TOC structure if available, otherwise use page title or format slug
-                    $pageTitle = $tocStructure[$section]['pages'][$page->slug]['title']
-                        ?? $page->title
-                        ?? $this->formatSlugToTitle($page->slug);
+        // Render items in order
+        foreach ($items as $item) {
+            if ($item['type'] === 'page') {
+                $page = $item['data'];
+                $isActive = $page->slug === $currentPage->slug;
+                $activeClass = $isActive
+                    ? 'text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-900/20'
+                    : 'text-gray-900 dark:text-gray-100 font-medium hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-50 dark:hover:bg-slate-800';
 
-                    $html .= sprintf(
-                        '<li><a href="%s" class="%s text-base block px-3 py-2 rounded-md">%s</a></li>',
-                        $url,
-                        $activeClass,
-                        e($pageTitle)
-                    );
-                }
-                $html .= '</ul>';
+                $url = route('docs.show', [$repository->slug, $alias->slug, $page->slug]);
+
+                // Use title from TOC structure if available, otherwise use page title or format slug
+                $pageTitle = $tocStructure['_root']['pages'][$page->slug]['title']
+                    ?? $page->title
+                    ?? $this->formatSlugToTitle($page->slug);
+
+                $html .= sprintf(
+                    '<a href="%s" class="%s text-base block px-3 py-2 rounded-md mb-1">%s</a>',
+                    $url,
+                    $activeClass,
+                    e($pageTitle)
+                );
             } else {
                 // Section with title and pages (collapsible)
+                $data = $item['data'];
+                $section = $item['section'];
                 $sectionTitle = $data['_index']->title ?? ucfirst($section);
                 $sectionId = 'section-' . str_replace(' ', '-', strtolower($sectionTitle));
 
@@ -461,6 +490,8 @@ class DocsController extends Controller
                 $html .= '</ul></div>';
             }
         }
+
+        $html .= '</div>';
 
         // Add script for collapsible sections
         $html .= '<script>
