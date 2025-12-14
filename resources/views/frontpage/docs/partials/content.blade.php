@@ -32,40 +32,38 @@ article .anchor-link:hover {
 
 
 
+/* Code blocks - let Torchlight handle syntax highlighting colors */
+article pre {
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 article pre code {
     display: block;
-    padding: 1rem;
+    padding: 1.5rem;
     font-size: 0.875rem;
     line-height: 1.7;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    color: #e5e7eb;
-    background: transparent;
+    /* Let Torchlight handle colors - don't override */
 }
 
-/* Inline code */
+/* Remove any conflicting background from Torchlight wrapper */
+article .torchlight {
+    background: transparent !important;
+}
+
+/* Inline code (not in pre blocks) */
 article :not(pre) > code {
-    background-color: #fdf2f8;
-    color: #db2777;
+    background-color: rgba(147, 51, 234, 0.1);
+    color: #a78bfa;
     padding: 0.125rem 0.375rem;
     border-radius: 0.25rem;
     font-size: 0.875rem;
     font-weight: 600;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
-
-.dark article :not(pre) > code {
-    background-color: rgba(219, 39, 119, 0.1);
-    color: #f9a8d4;
-}
-
-/* Syntax highlighting */
-article pre code .token.comment { color: #6b7280; }
-article pre code .token.string { color: #34d399; }
-article pre code .token.number { color: #f87171; }
-article pre code .token.keyword { color: #a78bfa; }
-article pre code .token.function { color: #fbbf24; }
-article pre code .token.operator { color: #60a5fa; }
-article pre code .token.variable { color: #f472b6; }
 </style>
 
 <article class="prose prose-slate dark:prose-invert max-w-none
