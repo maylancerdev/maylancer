@@ -437,7 +437,7 @@ class DocsController extends Controller
                 $sectionId = 'section-' . str_replace(' ', '-', strtolower($sectionTitle));
 
                 $html .= '<div class="mb-4">';
-                $html .= '<button type="button" class="flex items-center w-full text-left px-3 py-2 text-base font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800 rounded-md" onclick="toggleSection(\'' . $sectionId . '\')">';
+                $html .= '<button type="button" class="flex items-center w-full text-left px-3 py-2 text-base font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800 rounded-md" onclick="toggleSection(this, \'' . $sectionId . '\')">';
                 // All sections open by default, arrow pointing down
                 $html .= '<svg class="w-4 h-4 mr-2 transition-transform section-arrow" id="' . $sectionId . '-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>';
                 $html .= e($sectionTitle);
@@ -472,18 +472,28 @@ class DocsController extends Controller
 
         $html .= '</div>';
 
-        // Add script for collapsible sections
+        // Add script for collapsible sections (only if not already defined)
         $html .= '<script>
-            function toggleSection(id) {
-                const section = document.getElementById(id);
-                const arrow = document.getElementById(id + "-arrow");
-                if (section.classList.contains("hidden")) {
-                    section.classList.remove("hidden");
-                    arrow.style.transform = "rotate(0deg)";
-                } else {
-                    section.classList.add("hidden");
-                    arrow.style.transform = "rotate(-90deg)";
-                }
+            if (typeof window.toggleSection === "undefined") {
+                window.toggleSection = function(button, id) {
+                    // Find section and arrow relative to the clicked button
+                    const container = button.parentElement;
+                    const section = container.querySelector("#" + id);
+                    const arrow = container.querySelector("#" + id + "-arrow");
+
+                    if (!section || !arrow) {
+                        console.error("Section or arrow not found:", id);
+                        return;
+                    }
+
+                    if (section.classList.contains("hidden")) {
+                        section.classList.remove("hidden");
+                        arrow.style.transform = "rotate(0deg)";
+                    } else {
+                        section.classList.add("hidden");
+                        arrow.style.transform = "rotate(-90deg)";
+                    }
+                };
             }
         </script>';
 
