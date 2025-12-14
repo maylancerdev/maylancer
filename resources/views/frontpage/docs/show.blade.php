@@ -1,16 +1,5 @@
 <x-app-layout>
     <div class="min-h-screen bg-gray-50 dark:bg-slate-950" x-data="{ sidebarOpen: false }">
-        <!-- Mobile Menu Button -->
-        <button
-            @click="sidebarOpen = true"
-            class="lg:hidden fixed bottom-6 right-6 z-40 p-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition-colors"
-            aria-label="Open navigation menu"
-        >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-
         <!-- Mobile Overlay -->
         <div
             x-show="sidebarOpen"
@@ -27,8 +16,21 @@
 
         <!-- Breadcrumbs -->
         <div class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
-            <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
-                @include('frontpage.docs.partials.breadcrumbs')
+            <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-4">
+                <!-- Mobile Menu Button (Top Left) -->
+                <button
+                    @click="sidebarOpen = true"
+                    class="lg:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    aria-label="Open navigation menu"
+                >
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <div class="flex-1">
+                    @include('frontpage.docs.partials.breadcrumbs')
+                </div>
             </div>
         </div>
 
@@ -37,7 +39,7 @@
                 <!-- Left Sidebar - Navigation -->
                 <aside
                     x-bind:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                    class="fixed lg:sticky top-0 left-0 z-50 lg:z-auto w-72 h-screen overflow-y-auto border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transform transition-transform duration-300 ease-in-out lg:block"
+                    class="fixed lg:static top-0 left-0 z-50 lg:z-auto w-72 h-screen lg:h-auto overflow-y-auto border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transform lg:transform-none transition-transform duration-300 ease-in-out lg:block"
                 >
                     <!-- Close Button (Mobile Only) -->
                     <button
