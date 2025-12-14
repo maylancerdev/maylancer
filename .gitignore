@@ -7,6 +7,8 @@
 /storage/docs-temp
 /vendor
 .env
+/storage/*
+!/storage/.gitignore
 .env.backup
 .env.production
 /.idea
