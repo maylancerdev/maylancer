@@ -302,11 +302,8 @@ class DocsController extends Controller
 
     private function renderMarkdown(string $contents): string
     {
-        // Use Spatie Laravel Markdown with Shiki highlighting
-        // Create a fresh instance with custom configuration
-        $renderer = (new \Spatie\LaravelMarkdown\MarkdownRenderer())
-            ->highlightTheme('github-light')
-            ->renderAnchors(true);
+        // Use the configured markdown renderer (includes Torchlight for syntax highlighting)
+        $renderer = app(\Spatie\LaravelMarkdown\MarkdownRenderer::class);
 
         // Add custom inline renderers for images and links
         $renderer->addInlineRenderer(Image::class, new ImageRenderer());
