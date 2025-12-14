@@ -62,10 +62,22 @@ class DocsController extends Controller
             $alias = $repository->aliases->first();
         }
 
+        // Get first valid page (excluding README, toc, _index)
+        $firstPage = $alias->pages
+            ->where('section', '_root')
+            ->filter(function ($page) {
+                return !in_array(strtolower(basename($page->slug)), ['readme', 'toc', '_index']);
+            })
+            ->first();
+
+        if (!$firstPage) {
+            abort(404, 'No documentation pages found');
+        }
+
         return redirect()->action([DocsController::class, 'show'], [
             $repository->slug,
             $alias->slug,
-            $alias->pages->where('section', '_root')->first()->slug,
+            $firstPage->slug,
         ]);
     }
 
