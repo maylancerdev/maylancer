@@ -432,9 +432,14 @@ class DocsController extends Controller
 
         // Add sections
         foreach ($navigation as $section => $data) {
-            if ($section !== '_root' && isset($data['_index'])) {
-                $indexPage = $data['_index'];
-                $weight = $indexPage->weight ?? 9999;
+            if ($section !== '_root') {
+                // Get weight from _index if available, otherwise from TOC structure or default
+                $weight = 9999;
+                if (isset($data['_index']->weight)) {
+                    $weight = $data['_index']->weight;
+                } elseif (isset($tocStructure[$section]['order'])) {
+                    $weight = $tocStructure[$section]['order'];
+                }
 
                 $items[] = [
                     'type' => 'section',
@@ -474,7 +479,7 @@ class DocsController extends Controller
                 // Section with title and pages (collapsible)
                 $data = $item['data'];
                 $section = $item['section'];
-                $sectionTitle = $data['_index']->title ?? ucfirst($section);
+                $sectionTitle = $data['_index']->title ?? $this->formatSlugToTitle($section);
                 $sectionId = 'section-' . str_replace(' ', '-', strtolower($sectionTitle));
 
                 $html .= '<div class="mb-4">';

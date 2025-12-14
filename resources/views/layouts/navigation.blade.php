@@ -93,7 +93,7 @@
             x-transition:leave-start="opacity-100 scale-100"
             x-transition:leave-end="opacity-0 scale-95"
             class="absolute inset-x-0 z-30 px-5 pt-4 pb-8 overflow-hidden duration-300 top-24 bg-amber-100"
-            @click.away="mobileMenuOpen = true"
+            @click.away="mobileMenuOpen = false"
         >
             <div>
                 <div>
