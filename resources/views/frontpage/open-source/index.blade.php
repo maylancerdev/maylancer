@@ -23,7 +23,7 @@
     <section class="relative py-16 bg-vanilla sm:py-20">
         <!-- Container -->
         <div class="max-w-screen-xl px-4 mx-auto sm:px-6 lg:px-8">
-            <div class="grid items-start max-w-lg gap-12 mx-auto sm:max-w-xl md:max-w-2xl lg:mx-0 lg:max-w-none lg:grid-cols-12">
+            <div class="gap-12 items-start lg:grid-cols-12 lg:max-w-none lg:mx-0 max-w-lg md:max-w-2xl mx-auto sm:max-w-xl">
                 <!-- Package Cards -->
                 <div class="grid gap-6 sm:grid-cols-2 lg:col-span-7 lg:gap-5 xl:gap-8">
                     @foreach(config('maylancer.open-source') as $key => $project)
