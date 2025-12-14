@@ -261,41 +261,21 @@ class DocsController extends Controller
                 return $navigation;
             }, []);
 
-        // Sort sections based on TOC structure or weight
+        // Sort sections based on TOC structure order only
         $sortedNavigation = collect($navigation)->sortBy(function (array $data, string $section) use ($tocStructure) {
-            // Check if section has explicit weight from front matter
-            if (isset($data['_index']->weight)) {
-                return $data['_index']->weight;
-            }
-
-            // Use TOC structure order if available
-            if (isset($tocStructure[$section]['order'])) {
-                return $tocStructure[$section]['order'];
-            }
-
-            // Default to high number to put at end
-            return 9999;
+            // Use TOC structure order if available, otherwise put at end
+            return $tocStructure[$section]['order'] ?? 9999;
         });
 
-        // Sort pages within each section based on TOC structure or weight
+        // Sort pages within each section based on TOC structure order only
         $sortedNavigation = $sortedNavigation->map(function (array $data, string $section) use ($tocStructure) {
             if (!isset($data['pages'])) {
                 return $data;
             }
 
             $data['pages'] = collect($data['pages'])->sortBy(function (DocumentationPage $page) use ($tocStructure, $section) {
-                // Check if page has explicit weight from front matter
-                if (isset($page->weight)) {
-                    return $page->weight;
-                }
-
-                // Use TOC structure order if available
-                if (isset($tocStructure[$section]['pages'][$page->slug]['order'])) {
-                    return $tocStructure[$section]['pages'][$page->slug]['order'];
-                }
-
-                // Default to high number to put at end
-                return 9999;
+                // Use TOC structure order if available, otherwise put at end
+                return $tocStructure[$section]['pages'][$page->slug]['order'] ?? 9999;
             })->values()->all();
 
             return $data;
@@ -419,11 +399,12 @@ class DocsController extends Controller
         // Add root pages
         if (isset($navigation['_root']['pages'])) {
             foreach ($navigation['_root']['pages'] as $page) {
-                $weight = $page->weight ?? 9999;
+                // Use TOC order for root pages
+                $order = $tocStructure['_root']['pages'][$page->slug]['order'] ?? 9999;
 
                 $items[] = [
                     'type' => 'page',
-                    'weight' => $weight,
+                    'order' => $order,
                     'data' => $page,
                     'section' => '_root'
                 ];
@@ -433,25 +414,20 @@ class DocsController extends Controller
         // Add sections
         foreach ($navigation as $section => $data) {
             if ($section !== '_root') {
-                // Get weight from _index if available, otherwise from TOC structure or default
-                $weight = 9999;
-                if (isset($data['_index']->weight)) {
-                    $weight = $data['_index']->weight;
-                } elseif (isset($tocStructure[$section]['order'])) {
-                    $weight = $tocStructure[$section]['order'];
-                }
+                // Use TOC order for sections
+                $order = $tocStructure[$section]['order'] ?? 9999;
 
                 $items[] = [
                     'type' => 'section',
-                    'weight' => $weight,
+                    'order' => $order,
                     'data' => $data,
                     'section' => $section
                 ];
             }
         }
 
-        // Sort all items by weight
-        usort($items, fn($a, $b) => $a['weight'] <=> $b['weight']);
+        // Sort all items by TOC order
+        usort($items, fn($a, $b) => $a['order'] <=> $b['order']);
 
         // Render items in order
         foreach ($items as $item) {
