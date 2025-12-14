@@ -306,44 +306,25 @@ class DocsController extends Controller
 
     private function renderMarkdown(string $contents): string
     {
-        // Merge config from both markdown config files
-        $config = [
-            'heading_permalink' => config('markdown.heading_permalink', [
-                'html_class' => 'anchor-link',
-                'symbol' => '#',
-                'id_prefix' => '',
-                'fragment_prefix' => '',
-                'insert' => 'before',
-                'min_heading_level' => 2,
-                'max_heading_level' => 6,
-            ]),
-            'html_input' => config('markdown.html_input', 'strip'),
-            'allow_unsafe_links' => config('markdown.allow_unsafe_links', true),
-            'commonmark' => config('markdown.commonmark', []),
-            'renderer' => config('markdown.renderer', []),
-            'table' => config('markdown.table', []),
-            'max_nesting_level' => config('markdown.max_nesting_level', PHP_INT_MAX),
-            'slug_normalizer' => config('markdown.slug_normalizer', []),
-        ];
+        // Use Spatie Laravel Markdown with Shiki highlighting
+        $renderer = app(\Spatie\LaravelMarkdown\MarkdownRenderer::class);
 
-        $environment = new Environment($config);
+        // Configure Shiki theme - use github-dark for dark mode support
+        $renderer->highlightTheme('github-dark');
 
-        // Add extensions from config
-        $extensions = config('markdown.extensions', []);
-        foreach ($extensions as $extension) {
-            if (class_exists($extension)) {
-                $environment->addExtension(new $extension());
-            }
-        }
+        // Enable anchor links for headings
+        $renderer->addAnchorsToHeadings();
+
+        // Add CommonMark extensions
+        $renderer->addExtension(new \League\CommonMark\Extension\Table\TableExtension());
+        $renderer->addExtension(new \League\CommonMark\Extension\Autolink\AutolinkExtension());
+        $renderer->addExtension(new \League\CommonMark\Extension\Attributes\AttributesExtension());
 
         // Add custom inline renderers for images and links
-        $environment->addRenderer(Image::class, new ImageRenderer());
-        $environment->addRenderer(Link::class, new LinkRenderer());
+        $renderer->addInlineRenderer(Image::class, new ImageRenderer());
+        $renderer->addInlineRenderer(Link::class, new LinkRenderer());
 
-        // Create converter and render
-        $converter = new MarkdownConverter($environment);
-
-        return $converter->convert($contents)->getContent();
+        return $renderer->toHtml($contents);
     }
 
     private function getPrevPage(DocumentationPage $currentPage, Collection $navigation): ?DocumentationPage
