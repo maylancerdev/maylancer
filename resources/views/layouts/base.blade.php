@@ -56,7 +56,6 @@
                 },
             });
 
-            console.log('Alpine modals store registered:', Alpine.store('modals'));
         });
     </script>
 </head>

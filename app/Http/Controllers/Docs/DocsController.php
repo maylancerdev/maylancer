@@ -112,13 +112,26 @@ class DocsController extends Controller
         /** @var Collection $pages */
         $pages = $alias->pages->filter(function ($page) {
             // Filter out toc.md, README.md and other non-documentation files
-            return !in_array(strtolower(basename($page->slug)), ['toc', '_index', 'readme']);
+            // Note: _index files are kept as they're needed for section navigation
+            return !in_array(strtolower(basename($page->slug)), ['toc', 'readme']);
         });
 
         $page = $pages->firstWhere('slug', $slug);
 
         if (! $page) {
             return redirect()->action([DocsController::class, 'repository'], [$repository->slug, $alias->slug]);
+        }
+
+        // Redirect _index pages to their section's first page
+        if ($page->isIndex()) {
+            $sectionPages = $pages->filter(function ($p) use ($page) {
+                return $p->section === $page->section && !$p->isIndex();
+            })->sortBy('weight');
+
+            $firstPage = $sectionPages->first();
+            if ($firstPage) {
+                return redirect()->action([DocsController::class, 'show'], [$repository->slug, $alias->slug, $firstPage->slug]);
+            }
         }
 
         // Lazy render markdown at request time
@@ -406,9 +419,11 @@ class DocsController extends Controller
         // Add root pages
         if (isset($navigation['_root']['pages'])) {
             foreach ($navigation['_root']['pages'] as $page) {
+                $weight = $page->weight ?? 9999;
+
                 $items[] = [
                     'type' => 'page',
-                    'weight' => $page->weight ?? 9999,
+                    'weight' => $weight,
                     'data' => $page,
                     'section' => '_root'
                 ];
@@ -417,10 +432,13 @@ class DocsController extends Controller
 
         // Add sections
         foreach ($navigation as $section => $data) {
-            if ($section !== '_root') {
+            if ($section !== '_root' && isset($data['_index'])) {
+                $indexPage = $data['_index'];
+                $weight = $indexPage->weight ?? 9999;
+
                 $items[] = [
                     'type' => 'section',
-                    'weight' => $data['_index']->weight ?? 9999,
+                    'weight' => $weight,
                     'data' => $data,
                     'section' => $section
                 ];
