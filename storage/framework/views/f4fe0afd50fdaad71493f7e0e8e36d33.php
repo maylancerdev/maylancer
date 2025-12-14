@@ -30,20 +30,11 @@ article .anchor-link:hover {
     color: #818cf8;
 }
 
-/* Code block styling */
-article pre {
-    background-color: #111827 !important;
-    border-radius: 0.5rem;
-    padding: 0 !important;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
-    overflow-x: auto;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
+
 
 article pre code {
     display: block;
-    padding: 1.5rem;
+    padding: 1rem;
     font-size: 0.875rem;
     line-height: 1.7;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
