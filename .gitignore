@@ -20,3 +20,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+todo.md
+DOCUMENTATION_SYSTEM_USAGE.md
+public/docs/

@@ -7,7 +7,7 @@
             </aside>
 
             <!-- Main Content -->
-            <main class="flex-1 min-w-0 px-8 py-12 lg:px-16 xl:pr-8">
+            <main class="flex-1 min-w-0 px-8 py-12 lg:px-12 xl:px-16">
                 @include('frontpage.docs.partials.content')
             </main>
 

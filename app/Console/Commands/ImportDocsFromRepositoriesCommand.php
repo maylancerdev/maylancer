@@ -73,7 +73,10 @@ class ImportDocsFromRepositoriesCommand extends Command
             ->map(fn (string $repositoryName) => $repositoriesWithDocs[$repositoryName] ?? null)
             ->filter()
             ->flatMap(function (array $repository) {
-                return collect($repository['branches'])
+                // Auto-detect branches if not manually configured
+                $branches = $repository['branches'] ?? $this->autoDetectBranches($repository);
+
+                return collect($branches)
                     ->map(fn (string $alias, string $branch) => [$repository, $alias, $branch])
                     ->values()
                     ->toArray();
@@ -132,6 +135,91 @@ class ImportDocsFromRepositoriesCommand extends Command
             ,
             base_path()
         );
+    }
+
+    protected function autoDetectBranches(array $repository): array
+    {
+        $this->info("Auto-detecting branches for {$repository['repository']}...");
+
+        $accessToken = config('services.github.docs_access_token');
+        $apiUrl = "https://api.github.com/repos/{$repository['repository']}/branches";
+
+        // Fetch branches from GitHub API
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $apiUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: token ' . $accessToken,
+                'User-Agent: Maylancer-Docs',
+                'Accept: application/vnd.github.v3+json',
+            ],
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            $this->error("Failed to fetch branches for {$repository['repository']} (HTTP {$httpCode})");
+            return ['master' => 'latest']; // Fallback to master branch
+        }
+
+        $branches = json_decode($response, true);
+
+        if (! is_array($branches)) {
+            $this->error("Invalid response from GitHub API for {$repository['repository']}");
+            return ['master' => 'latest'];
+        }
+
+        // Extract branch names
+        $branchNames = collect($branches)->pluck('name');
+
+        // Map branches to aliases based on patterns
+        $detectedBranches = [];
+
+        // Priority order: main/master first, then version branches
+        if ($branchNames->contains('main')) {
+            $detectedBranches['main'] = 'latest';
+        } elseif ($branchNames->contains('master')) {
+            $detectedBranches['master'] = 'latest';
+        }
+
+        // Detect version branches (v1, v2, v3, etc.)
+        $versionBranches = $branchNames->filter(function ($branch) {
+            return preg_match('/^v?\d+(\.\d+)?(\.\d+)?$/', $branch);
+        })->sort(function ($a, $b) {
+            // Sort in descending order (newest version first)
+            return version_compare($this->normalizeVersion($b), $this->normalizeVersion($a));
+        });
+
+        foreach ($versionBranches as $branch) {
+            // Generate alias: v2 -> v2, 2.0 -> v2, 1.1 -> v1
+            if (preg_match('/^v?(\d+)/', $branch, $matches)) {
+                $majorVersion = $matches[1];
+                $alias = "v{$majorVersion}";
+
+                // Only add if we don't already have this alias
+                if (! in_array($alias, $detectedBranches)) {
+                    $detectedBranches[$branch] = $alias;
+                }
+            }
+        }
+
+        if (empty($detectedBranches)) {
+            $this->warn("No version branches detected for {$repository['repository']}, using master as fallback");
+            return ['master' => 'latest'];
+        }
+
+        $this->info('Detected branches: ' . collect($detectedBranches)->map(fn($alias, $branch) => "{$branch} => {$alias}")->implode(', '));
+
+        return $detectedBranches;
+    }
+
+    protected function normalizeVersion(string $version): string
+    {
+        // Remove 'v' prefix and ensure it's in a comparable format
+        return ltrim($version, 'v');
     }
 
     private function cleanRepositoryFolders(): void

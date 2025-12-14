@@ -99,8 +99,8 @@ class DocsController extends Controller
 
         /** @var Collection $pages */
         $pages = $alias->pages->filter(function ($page) {
-            // Filter out toc.md and other non-documentation files
-            return !in_array(basename($page->slug), ['toc', '_index']);
+            // Filter out toc.md, README.md and other non-documentation files
+            return !in_array(strtolower(basename($page->slug)), ['toc', '_index', 'readme']);
         });
 
         $page = $pages->firstWhere('slug', $slug);
