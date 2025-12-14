@@ -313,7 +313,7 @@ class DocsController extends Controller
         $renderer->highlightTheme('github-dark');
 
         // Enable anchor links for headings
-        $renderer->renderAnchors();
+        $renderer->renderAnchors(true);
 
         // Add CommonMark extensions
         $renderer->addExtension(new \League\CommonMark\Extension\Table\TableExtension());
