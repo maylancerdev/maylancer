@@ -1,20 +1,25 @@
 <x-app-layout>
-    <div class="max-w-screen-xl px-4 mx-auto grid max-w-8xl xl:px-12">
-        @include('frontpage.docs.partials.breadcrumbs')
+    <div class="min-h-screen bg-gray-50 dark:bg-slate-950">
+        <div class="flex max-w-screen-2xl mx-auto">
+            <!-- Left Sidebar - Navigation -->
+            <aside class="hidden lg:block w-72 border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 h-screen overflow-y-auto">
+                @include('frontpage.docs.partials.sidebar')
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 min-w-0 px-8 py-12 lg:px-16 xl:pr-8">
+                @include('frontpage.docs.partials.content')
+            </main>
+
+            <!-- Right Sidebar - On This Page -->
+            <aside class="hidden xl:block w-64 border-l border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 h-screen overflow-y-auto px-6 py-12">
+                @include('frontpage.docs.partials.on-page')
+            </aside>
+        </div>
     </div>
-    <div class="max-w-screen-xl  px-4 mx-auto sm:px-6 grid grid-cols-5 gap-4  flex max-w-8xl justify-center lg:px-8 xl:px-12">
 
-        @include('frontpage.docs.partials.sidebar')
-
-        @include('frontpage.docs.partials.content')
-
-        @include('frontpage.docs.partials.on-page')
-
-    </div>
-
-
-
-
-
-
+    <!-- Search Modal -->
+    <x-search-modal name="search-modal">
+        @include('frontpage.docs.partials.search-modal-content')
+    </x-search-modal>
 </x-app-layout>

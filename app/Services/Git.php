@@ -8,6 +8,7 @@
     use CzProject\GitPhp\IRunner;
     use CzProject\GitPhp\RunnerResult;
     use CzProject\GitPhp\Runners\CliRunner;
+    use App\Services\GitRepository;
 
     class Git
 	{

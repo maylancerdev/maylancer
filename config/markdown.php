@@ -95,7 +95,7 @@ return [
     'commonmark' => [
         'enable_em'              => true,
         'enable_strong'          => true,
-        'use_asterisk'           => true,
+        'use_asterisk'           => false,
         'use_underscore'         => true,
         'unordered_list_markers' => ['-', '+', '*'],
 
@@ -104,7 +104,7 @@ return [
 
 
     'heading_permalink' => [
-        'html_class' => 'heading-permalink ',
+        'html_class' => 'anchor-link',
         'id_prefix' => '',
         'fragment_prefix' => '',
         'insert' => 'before',

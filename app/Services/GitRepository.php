@@ -234,9 +234,46 @@
 
 
 		/**
+		 * Gets the default branch name (main or master)
+		 * @return string
+		 * @throws GitException
+		 */
+		public function getDefaultBranch()
+		{
+			try {
+				// Try to get the default branch from remote
+				$result = $this->run('symbolic-ref', 'refs/remotes/origin/HEAD', '--short');
+				$branch = trim($result->getOutputAsString());
+				// Remove 'origin/' prefix if present
+				return str_replace('origin/', '', $branch);
+			} catch (GitException $e) {
+				// If that fails, check remote branches
+				try {
+					$branches = $this->getRemoteBranches();
+					if ($branches) {
+						// Check for main or master in remote branches
+						foreach ($branches as $branch) {
+							if (strpos($branch, 'origin/main') !== false) {
+								return 'main';
+							}
+							if (strpos($branch, 'origin/master') !== false) {
+								return 'master';
+							}
+						}
+					}
+				} catch (GitException $e2) {
+					// Ignore and continue
+				}
+				
+				// Default to main (modern standard)
+				return 'main';
+			}
+		}
+
+
+		/**
 		 * Checkout branch.
 		 * `git checkout <branch>`
-		 * @param  string $name
 		 * @throws GitException
 		 * @return static
 		 */
@@ -254,7 +291,22 @@
 				throw new InvalidArgumentException('Branch name cannot be option name.');
 			}
 
-			$this->run('checkout', $name);
+			try {
+				$this->run('checkout', $name);
+			} catch (GitException $e) {
+				// If checkout fails, try checking out from remote with tracking
+				try {
+					$this->run('checkout', '-b', $name, '--track', "origin/$name");
+				} catch (GitException $e2) {
+					// Try without -b flag in case branch exists
+					try {
+						$this->run('checkout', '--track', "origin/$name");
+					} catch (GitException $e3) {
+						// If all attempts fail, throw the original error
+						throw $e;
+					}
+				}
+			}
 			return $this;
 		}
 

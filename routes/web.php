@@ -46,9 +46,9 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::group(['prefix' => 'docs'], function () {
-    Route::get('/', [DocsController::class, 'index'])->name('index');
-    Route::get('{repository}/{version?}/{page?}', [DocsController::class, 'show'])->name('show');
-    Route::get('{repository}/{alias}/{slug}', [DocsController::class, 'show'])->where('slug', '.*');
+    Route::get('/', [DocsController::class, 'index'])->name('docs.index');
+    Route::get('/{repository}/{alias?}', [DocsController::class, 'repository']);
+    Route::get('/{repository}/{alias}/{slug}', [DocsController::class, 'show'])->where('slug', '.*')->name('docs.show');
 });
 
 

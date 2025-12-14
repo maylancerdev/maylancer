@@ -20,6 +20,45 @@
     ])
     @livewireStyles
 
+    <script>
+        document.addEventListener('alpine:init', () => {
+            const Alpine = window.Alpine;
+            if (!Alpine) {
+                console.error('Alpine not found');
+                return;
+            }
+
+            Alpine.store('modals', {
+                openModals: [],
+                init() {
+                    if (window.location.hash) {
+                        this.openModals.push(window.location.hash.replace('#', ''));
+                    }
+                },
+                isOpen(id) {
+                    return this.openModals.includes(id);
+                },
+                open(id) {
+                    if (!this.openModals.includes(id)) {
+                        this.openModals.push(id);
+                    }
+                    window.location.hash = id;
+                    Alpine.nextTick(() => {
+                        const input = document.querySelector(`#modal-${id} input:not([type=hidden])`);
+                        if (input) {
+                            input.focus();
+                        }
+                    });
+                },
+                close(id) {
+                    this.openModals = this.openModals.filter(modal => modal !== id);
+                    history.pushState('', document.title, window.location.pathname + window.location.search);
+                },
+            });
+
+            console.log('Alpine modals store registered:', Alpine.store('modals'));
+        });
+    </script>
 </head>
 
 <body class="font-sans antialiased">
@@ -27,6 +66,7 @@
     {{ $slot }}
 
     @livewireScripts
+    @stack('modals')
     @stack('scripts')
 </body>
 

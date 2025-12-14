@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Docs\DocumentationContentParser;
+use App\Docs\DocumentationPage;
+use App\Docs\DocumentationPathParser;
 use App\Services\MailchimpNewsletter;
 use App\Services\Newsletter;
 use App\Settings\FooterSettings;
@@ -24,6 +27,21 @@ class AppServiceProvider extends ServiceProvider
 
             return new MailchimpNewsletter($client);
         });
+
+        // Register Sheets collections dynamically for each documentation repository
+        foreach (config('docs.repositories') as $docsRepository) {
+            config()->set("filesystems.disks.{$docsRepository['name']}", [
+                'driver' => 'local',
+                'root' => storage_path("docs/{$docsRepository['name']}"),
+            ]);
+
+            config()->set("sheets.collections.{$docsRepository['name']}", [
+                'disk' => $docsRepository['name'],
+                'sheet_class' => DocumentationPage::class,
+                'path_parser' => DocumentationPathParser::class,
+                'content_parser' => DocumentationContentParser::class,
+            ]);
+        }
     }
 
     /**

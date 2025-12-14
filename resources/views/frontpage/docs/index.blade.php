@@ -25,27 +25,35 @@
 
                 <div class="not-prose mt-4 grid grid-cols-1 gap-x-6 gap-y-10 border-t border-zinc-900/5 pt-10 dark:border-white/5 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3">
 
-                    @foreach ($docs as $id => $doc)
-                        <div class="flex flex-row-reverse gap-6">
-                            <div class="flex-auto">
-                                <h3 class="text-sm font-semibold text-zinc-900 dark:text-white">
-                                    {{ $doc['full_name'] }}
-                                </h3>
-                                <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    {{ $doc['description'] ?? '' }}
-                                </p>
-                                <p class="mt-4"><a
-                                            class="inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-500"
-                                            href="{{ route('show', $id) }}">Documentation
-                                        <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"
-                                             class="mt-0.5 h-5 w-5 relative top-px -mr-1">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                  d="m11.5 6.5 3 3.5m0 0-3 3.5m3-3.5h-9"></path>
-                                        </svg>
-                                    </a></p>
+                    @foreach ($repositories as $repository)
+                        @php
+                            $firstAlias = $repository->aliases->first();
+                            $firstPage = $firstAlias?->pages->first();
+                            $hasDocumentation = $firstAlias && $firstPage;
+                        @endphp
+
+                        @if($hasDocumentation)
+                            <div class="flex flex-row-reverse gap-6">
+                                <div class="flex-auto">
+                                    <h3 class="text-sm font-semibold text-zinc-900 dark:text-white">
+                                        {{ $repository->fullName ?? ucfirst($repository->slug) }}
+                                    </h3>
+                                    <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                                        {{ $repository->description ?? $repository->category }}
+                                    </p>
+                                    <p class="mt-4"><a
+                                                class="inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition text-emerald-500 hover:text-emerald-600 dark:text-emerald-400 dark:hover:text-emerald-500"
+                                                href="{{ route('docs.show', [$repository->slug, $firstAlias->slug, $firstPage->slug]) }}">Documentation
+                                            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                                                 class="mt-0.5 h-5 w-5 relative top-px -mr-1">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                      d="m11.5 6.5 3 3.5m0 0-3 3.5m3-3.5h-9"></path>
+                                            </svg>
+                                        </a></p>
+                                </div>
+                                <x-bi-github class="h-10 w-10" />
                             </div>
-                            <x-bi-github class="h-10 w-10" />
-                        </div>
+                        @endif
                     @endforeach
 
                 </div>

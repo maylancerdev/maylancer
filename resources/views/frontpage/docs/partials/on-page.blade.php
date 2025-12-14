@@ -1,54 +1,101 @@
 @if(count($tableOfContents))
-    <aside class="xl:sticky xl:top-[4.5rem] sticky overflow-hidden self-start xl:-mr-6 xl:block xl:flex-none xl:overflow-y-auto xl:pr-6 hidden lg:block md:block">
-    <nav aria-labelledby="on-this-page-title" class="onPage w-56 border-l-2 pl-2">
-        <h2 id="on-this-page-title" class="mb-3 text-gray font-semibold uppercase tracking-wider text-xs">
-            On this page</h2>
-        <ol role="list" class="mt-4 space-y-3 text-sm">
-            @foreach($tableOfContents as $fragment => $title)
-                <li class="text-sm">
-                    <a href="#{{  $title['id'] }}" class="docs-submenu-item">
-                        {{ $title['text'] }}
+    <div>
+        <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+            On this page
+        </h2>
+        <ul class="space-y-2.5 text-sm">
+            @foreach($tableOfContents as $item)
+                <li>
+                    <a href="#{{ $item['id'] }}"
+                       class="toc-link block text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                       data-target="{{ $item['id'] }}">
+                        {{ $item['text'] }}
                     </a>
                 </li>
             @endforeach
+        </ul>
 
-
-        </ol>
-    </nav>
-</aside>
+        @if(isset($repository))
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-slate-700">
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+                    Backlinks
+                </h2>
+                <ul class="space-y-2.5 text-sm">
+                    @if($repository->demo)
+                        <li>
+                            <a href="{{ $repository->demo }}" target="_blank"
+                               class="block text-indigo-600 dark:text-indigo-400 hover:underline">
+                                Demo
+                            </a>
+                        </li>
+                    @endif
+                    @if($repository->support)
+                        <li>
+                            <a href="{{ $repository->support }}" target="_blank"
+                               class="block text-indigo-600 dark:text-indigo-400 hover:underline">
+                                Support
+                            </a>
+                        </li>
+                    @endif
+                    <li>
+                        <a href="{{ route('docs.index') }}"
+                           class="block text-indigo-600 dark:text-indigo-400 hover:underline">
+                            All Documentation
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        @endif
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var navLinks = document.querySelectorAll('.onPage ol li a');
-            var sectionOffsets = Array.from(navLinks).map(function(link) {
-                var href = link.getAttribute('href');
-                var target = document.querySelector(href);
-                if (target) {
-                    return target.offsetTop;
-                }
+            const tocLinks = document.querySelectorAll('.toc-link');
+
+            // Smooth scroll
+            tocLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    const target = document.getElementById(targetId);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        history.pushState(null, null, '#' + targetId);
+                    }
+                });
             });
 
-            window.addEventListener('scroll', function() {
-                var currentPosition = window.scrollY + (window.innerHeight / 2);
-                var activeSectionIndex = sectionOffsets.map(function(offset) {
-                    if (currentPosition >= offset) {
-                        return offset;
+            // Intersection observer for active state
+            const observerOptions = {
+                rootMargin: '-100px 0px -66%',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        tocLinks.forEach(link => {
+                            link.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'font-medium');
+                            link.classList.add('text-gray-600', 'dark:text-gray-400');
+                        });
+
+                        const activeLink = document.querySelector(`.toc-link[data-target="${entry.target.id}"]`);
+                        if (activeLink) {
+                            activeLink.classList.remove('text-gray-600', 'dark:text-gray-400');
+                            activeLink.classList.add('text-indigo-600', 'dark:text-indigo-400', 'font-medium');
+                        }
                     }
-                }).filter(function(offset) {
-                    return offset !== undefined; // Filter out undefined values
-                }).length - 1;
-
-                navLinks.forEach(function(link) {
-                    link.classList.remove('text-sky-500');
                 });
+            }, observerOptions);
 
-                if (activeSectionIndex >= 0 && activeSectionIndex < navLinks.length) {
-                    navLinks[activeSectionIndex].classList.add('text-sky-500');
+            // Observe all headings
+            tocLinks.forEach(link => {
+                const targetId = link.getAttribute('data-target');
+                const target = document.getElementById(targetId);
+                if (target) {
+                    observer.observe(target);
                 }
             });
         });
-
-
     </script>
-
 @endif

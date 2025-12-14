@@ -34,7 +34,7 @@ return [
             'id_prefix' => '',
             'fragment_prefix' => '',
             'insert' => 'before',
-            'min_heading_level' => 1,
+            'min_heading_level' => 3,
             'max_heading_level' => 6,
             'title' => 'Permalink',
             'symbol' => '',

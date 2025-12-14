@@ -24,8 +24,18 @@ return [
       |
       */
     'open-source' => [
-       'account-number-api' => 'https://nubapi.com',
-        'fintech-payment-integration' => '#',
+      'nubapi' => [
+          'docs' => 'https://maylancer.org/docs/nuban',
+          'name' => 'Nubapi',
+          'description' => 'Real-time Nigeria Bank API',
+          'website' => 'https://nubapi.com'
+          ],
+        'mailcade' => [
+            'docs' => 'https://maylancer.org/docs/mailcade',
+            'name' => 'Mailcade',
+            'description' => 'Developer Mail Sandbox - Email testing made easy',
+            'repository' => 'https://github.com/olakunlevpn/mailcade.git'
+          ],
     ]
 
 ];

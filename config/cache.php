@@ -93,6 +93,11 @@ return [
             'driver' => 'octane',
         ],
 
+        'docs' => [
+            'driver' => 'file',
+            'path' => storage_path('framework/cache/docs'),
+        ],
+
     ],
 
     /*
