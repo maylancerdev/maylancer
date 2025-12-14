@@ -24,7 +24,7 @@ return [
       |
       */
     'open-source' => [
-        'nubapi' => [
+        'nubapi' => [ 
             'docs' => 'https://maylancer.org/docs/nuban',
             'name' => 'Nubapi',
             'description' => 'Real-time Nigeria Bank API',

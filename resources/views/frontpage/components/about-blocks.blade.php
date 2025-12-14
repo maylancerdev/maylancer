@@ -88,7 +88,7 @@
                     Validate Nigeria bank accounts in real-time with our API. Seamlessly verify account details for accurate, secure transactions. Integrate effortlessly, streamline user experiences. Revolutionize bank account validation with our speedy, efficient, and accurate API. Access documentation, developer resources, and gain trust in your financial transactions. Experience real-time validation with our advanced API.
                     <br>
                     <a
-                    href="{{ config('maylancer.open-source.account-number-api') }}"
+                    href="{{ config('maylancer.open-source.nubapi.website') }}"
                     class="group mt-10 inline-flex items-center justify-center border border-slate-800 px-5 py-2.5 text-base font-medium text-slate-800 duration-150 ease-in-out hover:bg-slate-800 hover:text-white sm:mt-12"
                 >
                     Learn more
