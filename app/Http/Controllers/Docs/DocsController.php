@@ -315,11 +315,6 @@ class DocsController extends Controller
         // Enable anchor links for headings
         $renderer->renderAnchors(true);
 
-        // Add CommonMark extensions
-        $renderer->addExtension(new \League\CommonMark\Extension\Table\TableExtension());
-        $renderer->addExtension(new \League\CommonMark\Extension\Autolink\AutolinkExtension());
-        $renderer->addExtension(new \League\CommonMark\Extension\Attributes\AttributesExtension());
-
         // Add custom inline renderers for images and links
         $renderer->addInlineRenderer(Image::class, new ImageRenderer());
         $renderer->addInlineRenderer(Link::class, new LinkRenderer());
