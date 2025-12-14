@@ -43,7 +43,7 @@ article pre {
 
 article pre code {
     display: block;
-    padding: 1.5rem;
+    padding: 2rem;
     font-size: 0.875rem;
     line-height: 1.7;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
