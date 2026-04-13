@@ -25,3 +25,5 @@ yarn-error.log
 todo.md
 DOCUMENTATION_SYSTEM_USAGE.md
 public/docs/
+deploy-pull.sh
+auto-deploy.sh
