@@ -72,7 +72,7 @@
     </div>
 
     <!-- Mobile Menu-->
-    <div class="md:hidden">
+    <div class="md:hidden" x-cloak>
         <div
             x-show="mobileMenuOpen"
             x-transition:enter="duration-200 ease-out"
@@ -82,6 +82,7 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-20 bg-opacity-25 bg-slate-900 backdrop-blur"
+            @click="mobileMenuOpen = false"
         ></div>
 
         <div
@@ -97,7 +98,7 @@
         >
             <div>
                 <div>
-                    <div class="flex flex-col divide-y divide-gray-secondary-400/75">
+                    <div class="flex flex-col divide-y divide-gray-secondary-400/75" @click="mobileMenuOpen = false">
 
                         <x-front.anchor-link class="block px-4 pt-4 pb-2" link="product"> Product </x-front.anchor-link>
                         <x-front.anchor-link class="block px-4 pt-4 pb-2" link="open-source"> Open Source </x-front.anchor-link>
