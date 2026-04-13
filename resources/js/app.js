@@ -1,3 +1,9 @@
-// Livewire 3 includes its own Alpine, so we don't need to import it
-// Just import main.js for other scripts
+import Alpine from 'alpinejs'
+import Focus from '@alpinejs/focus'
+
+Alpine.plugin(Focus)
+
+window.Alpine = Alpine
+Alpine.start()
+
 import './main.js'
