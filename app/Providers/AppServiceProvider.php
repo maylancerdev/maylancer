@@ -8,6 +8,7 @@ use App\Docs\DocumentationPathParser;
 use App\Services\MailchimpNewsletter;
 use App\Services\Newsletter;
 use App\Settings\FooterSettings;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use MailchimpMarketing\ApiClient;
@@ -49,6 +50,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Str::macro('readDuration', function(...$text) {
             $totalWords = str_word_count(implode(" ", $text));
             $minutesToRead = round($totalWords / 200);
