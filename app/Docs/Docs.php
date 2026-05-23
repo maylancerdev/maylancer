@@ -53,8 +53,7 @@ class Docs
 
     public function getRepositories(): Collection
     {
-        return collect(config('docs.repositories'))
-            ->pluck('name')
+        return \App\Models\DocsRepository::pluck('name')
             ->map(function (string $repositoryName) {
                 try {
                     return $this->getRepository($repositoryName);

@@ -20,15 +20,13 @@ class Repository
         $this->aliases = $aliases;
         $this->category = $index->category ?? null;
 
-        // Load additional metadata from config
-        $repoConfig = collect(config('docs.repositories'))
-            ->firstWhere('name', $slug);
+        $repoModel = \App\Models\DocsRepository::firstWhere('name', $slug);
 
-        if ($repoConfig) {
-            $this->fullName = $repoConfig['full_name'] ?? null;
-            $this->description = $repoConfig['description'] ?? null;
-            $this->demo = $repoConfig['demo'] ?? null;
-            $this->support = $repoConfig['support'] ?? null;
+        if ($repoModel) {
+            $this->fullName = $repoModel->full_name;
+            $this->description = $repoModel->description;
+            $this->demo = $repoModel->demo;
+            $this->support = $repoModel->support;
         }
     }
 
