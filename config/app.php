@@ -156,21 +156,9 @@ return [
     */
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        /*
-         * Package Service Providers...
-         */
-
-        App\Providers\NavigationServiceProvider::class,
-        App\Providers\BladeComponentServiceProvider::class,
-
-        /*
-         * Application Service Providers...
-         */
         App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\NovaServiceProvider::class,
+        App\Providers\BladeComponentServiceProvider::class,
+        App\Providers\NavigationServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 

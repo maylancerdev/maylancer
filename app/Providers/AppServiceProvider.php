@@ -7,7 +7,6 @@ use App\Docs\DocumentationPage;
 use App\Docs\DocumentationPathParser;
 use App\Services\MailchimpNewsletter;
 use App\Services\Newsletter;
-use App\Settings\FooterSettings;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -20,10 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        app()->bind(Newsletter::class, function (){
-            $client =  (new ApiClient())->setConfig([
+        app()->bind(Newsletter::class, function () {
+            $client = (new ApiClient)->setConfig([
                 'apiKey' => config('services.mailchimp.key'),
-                'server' => config('services.mailchimp.server')
+                'server' => config('services.mailchimp.server'),
             ]);
 
             return new MailchimpNewsletter($client);
@@ -54,11 +53,11 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        Str::macro('readDuration', function(...$text) {
-            $totalWords = str_word_count(implode(" ", $text));
+        Str::macro('readDuration', function (...$text) {
+            $totalWords = str_word_count(implode(' ', $text));
             $minutesToRead = round($totalWords / 200);
 
-            return (int)max(1, $minutesToRead);
+            return (int) max(1, $minutesToRead);
         });
 
     }

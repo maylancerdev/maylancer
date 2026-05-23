@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 
 class BladeComponentServiceProvider extends ServiceProvider
 {
-
     /**
      * Register services.
      */
@@ -28,7 +27,6 @@ class BladeComponentServiceProvider extends ServiceProvider
 
         Blade::component('layouts.footer', 'footer');
         Blade::component('layouts.navigation', 'navigation');
-
 
         /*
         * HomePage custom components...
