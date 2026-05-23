@@ -32,10 +32,9 @@ class Subscribe extends Component
         $this->isSubscribed = true;
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
-        $this->email = '';
-        $this->resetForm();
+        $this->reset(['email']);
     }
 
 }
