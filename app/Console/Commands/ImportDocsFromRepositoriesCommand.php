@@ -32,7 +32,9 @@ class ImportDocsFromRepositoriesCommand extends Command
         foreach ($updatedNames->unique() as $name) {
             $repository = $repositories->get($name) ?? DocsRepository::firstWhere('name', $name);
             if (! $repository) {
+
                 $this->warn("Skipping unknown repository: {$name}");
+
                 continue;
             }
 
