@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements FilamentUser, HasMedia
 {
     use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia;
 
@@ -45,6 +47,14 @@ class User extends Authenticatable implements HasMedia
         'password' => 'hashed',
     ];
 
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return in_array($this->email, [
+            'olakunle@maylancer.org',
+            'olakunleips@gmail.com',
+        ], true);
+    }
 
     public function posts()
     {
