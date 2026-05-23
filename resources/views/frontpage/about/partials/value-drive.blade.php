@@ -26,7 +26,7 @@
                             BACKEND
                         </h3>
                         <p class="mt-5 leading-relaxed text-slate-50 sm:mt-6">
-                            We leverage a powerful technology stack consisting of Laravel, Laravel Spark, Laravel Nova, PHP, MySQL, Redis, Algolia, Elasticsearch, and Statamic to create robust and dynamic solutions for our clients.
+                            We leverage a powerful technology stack consisting of Laravel, Filament, Livewire, PHP, MySQL, Redis, Algolia, Elasticsearch, and Statamic to create robust and dynamic solutions for our clients.
                         </p>
                     </div>
                 </div>
