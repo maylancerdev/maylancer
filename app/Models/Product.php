@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProductType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -21,6 +22,14 @@ class Product extends Model implements HasMedia
         'external_link',
         'product_thumbnail',
         'published',
+        'is_lifetime',
+    ];
+
+    protected $casts = [
+        'product_type' => ProductType::class,
+        'published' => 'boolean',
+        'is_lifetime' => 'boolean',
+        'price' => 'decimal:2',
     ];
 
 
