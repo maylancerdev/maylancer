@@ -174,7 +174,6 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 

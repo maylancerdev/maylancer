@@ -4,7 +4,6 @@ namespace App\Http\Controllers\front\Blog;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
-use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -41,7 +40,8 @@ class BlogController extends Controller
     public function show(string $slug)
     {
         $post = Post::where('slug', $slug)->firstOrFail();
-        $text = Markdown::convert($post->text)->getContent();
+        $text = $post->text;
+
         return view('frontpage.blog.show', compact('post', 'text'));
 
     }

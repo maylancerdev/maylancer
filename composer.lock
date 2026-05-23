@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "08cefdff9d02d4664a81b4f9036a2a15",
+    "content-hash": "70ff36a0954a374cbee294aa9c5d1d42",
     "packages": [
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -1790,86 +1790,6 @@
                 }
             ],
             "time": "2025-12-03T09:33:47+00:00"
-        },
-        {
-            "name": "graham-campbell/markdown",
-            "version": "v16.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/GrahamCampbell/Laravel-Markdown.git",
-                "reference": "2f951f7cba4f2ab6af75b4b2821e93a81f6a70c0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/GrahamCampbell/Laravel-Markdown/zipball/2f951f7cba4f2ab6af75b4b2821e93a81f6a70c0",
-                "reference": "2f951f7cba4f2ab6af75b4b2821e93a81f6a70c0",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/contracts": "^10.44 || ^11.0 || ^12.0 || ^13.0",
-                "illuminate/filesystem": "^10.44 || ^11.0 || ^12.0 || ^13.0",
-                "illuminate/support": "^10.44 || ^11.0 || ^12.0 || ^13.0",
-                "illuminate/view": "^10.44 || ^11.0 || ^12.0 || ^13.0",
-                "league/commonmark": "^2.8.2",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "graham-campbell/analyzer": "^5.1",
-                "graham-campbell/testbench": "^6.2",
-                "mockery/mockery": "^1.6.12",
-                "phpunit/phpunit": "^10.5.63 || ^11.5.55 || ^12.5.14"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "GrahamCampbell\\Markdown\\MarkdownServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "GrahamCampbell\\Markdown\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Graham Campbell",
-                    "email": "hello@gjcampbell.co.uk",
-                    "homepage": "https://github.com/GrahamCampbell"
-                }
-            ],
-            "description": "Markdown Is A CommonMark Wrapper For Laravel",
-            "keywords": [
-                "Graham Campbell",
-                "GrahamCampbell",
-                "Laravel Markdown",
-                "Laravel-Markdown",
-                "common mark",
-                "commonmark",
-                "framework",
-                "laravel",
-                "markdown"
-            ],
-            "support": {
-                "issues": "https://github.com/GrahamCampbell/Laravel-Markdown/issues",
-                "source": "https://github.com/GrahamCampbell/Laravel-Markdown/tree/v16.1.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/GrahamCampbell",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/graham-campbell/markdown",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-03-19T20:52:58+00:00"
         },
         {
             "name": "graham-campbell/result-type",

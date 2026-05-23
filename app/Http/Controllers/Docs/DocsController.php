@@ -302,17 +302,19 @@ class DocsController extends Controller
 
     private function renderMarkdown(string $contents): string
     {
-        // Build CommonMark environment with all configured extensions
         $config = config('markdown');
 
         $environment = new Environment($config);
 
-        // Add all configured extensions
+        // Core is intentionally omitted from config/markdown.php (spatie's blade
+        // component auto-registers it and would conflict). Add it here for
+        // any standalone Environment we build.
+        $environment->addExtension(new CommonMarkCoreExtension());
+
         foreach ($config['extensions'] as $extension) {
             $environment->addExtension(new $extension());
         }
 
-        // Add custom inline renderers for images and links
         $environment->addRenderer(Image::class, new ImageRenderer());
         $environment->addRenderer(Link::class, new LinkRenderer());
 

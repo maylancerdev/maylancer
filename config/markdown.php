@@ -43,6 +43,11 @@ return [
     |
     */
 
+    // NOTE: Do not list CommonMarkCoreExtension here.
+    // spatie/laravel-markdown's blade component auto-registers Core
+    // and listing it again throws "two delimiter processors for *".
+    // Code that builds its own Environment (DocsController) must
+    // register Core explicitly.
     'extensions' => [
         League\CommonMark\Extension\Table\TableExtension::class,
         League\CommonMark\Extension\Autolink\AutolinkExtension::class,
@@ -94,7 +99,7 @@ return [
     'commonmark' => [
         'enable_em'              => true,
         'enable_strong'          => true,
-        'use_asterisk'           => false,
+        'use_asterisk'           => true,
         'use_underscore'         => true,
         'unordered_list_markers' => ['-', '+', '*'],
 
