@@ -27,5 +27,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'olakunle@maylancer.org',
             'password' => Hash::make('blackrap'),
         ]);
+
+        $this->call(DocsRepositorySeeder::class);
     }
 }
