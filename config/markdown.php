@@ -44,7 +44,6 @@ return [
     */
 
     'extensions' => [
-        League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension::class,
         League\CommonMark\Extension\Table\TableExtension::class,
         League\CommonMark\Extension\Autolink\AutolinkExtension::class,
         Torchlight\Commonmark\V2\TorchlightExtension::class,
