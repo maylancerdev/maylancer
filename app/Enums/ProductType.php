@@ -27,12 +27,12 @@ enum ProductType: string implements HasColor, HasIcon, HasLabel
         };
     }
 
-    public function getIcon(): string
+    public function getIcon(): Heroicon
     {
         return match ($this) {
-            self::Course => Heroicon::OutlinedAcademicCap->value,
-            self::License => Heroicon::OutlinedKey->value,
-            self::Ebook => Heroicon::OutlinedBookOpen->value,
+            self::Course => Heroicon::OutlinedAcademicCap,
+            self::License => Heroicon::OutlinedKey,
+            self::Ebook => Heroicon::OutlinedBookOpen,
         };
     }
 }
