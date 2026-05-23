@@ -21,9 +21,7 @@ class ImportDocsRepositoryJob implements ShouldQueue
 
     public int $timeout = 600;
 
-    public function __construct(public DocsRepository $repository)
-    {
-    }
+    public function __construct(public DocsRepository $repository) {}
 
     public function handle(): void
     {
@@ -41,7 +39,7 @@ class ImportDocsRepositoryJob implements ShouldQueue
                 $process->run();
 
                 if (! $process->isSuccessful()) {
-                    throw new DocsImportException("{$this->repository->name}/{$branch}: " . $process->getErrorOutput());
+                    throw new DocsImportException("{$this->repository->name}/{$branch}: ".$process->getErrorOutput());
                 }
 
                 $importedBranches[$branch] = $alias;
@@ -63,7 +61,7 @@ class ImportDocsRepositoryJob implements ShouldQueue
 
             throw $e;
         } finally {
-            File::deleteDirectory(storage_path('docs-temp/' . $this->repository->name));
+            File::deleteDirectory(storage_path('docs-temp/'.$this->repository->name));
         }
     }
 
@@ -86,7 +84,7 @@ class ImportDocsRepositoryJob implements ShouldQueue
             CURLOPT_URL => $apiUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => [
-                'Authorization: token ' . $accessToken,
+                'Authorization: token '.$accessToken,
                 'User-Agent: Maylancer-Docs',
                 'Accept: application/vnd.github.v3+json',
             ],
@@ -144,20 +142,21 @@ class ImportDocsRepositoryJob implements ShouldQueue
 
         return Process::fromShellCommandline(
             <<<BASH
-                rm -rf storage/docs/{$name}/{$alias} \
-                && mkdir -p storage/docs/{$name}/{$alias} \
-                && mkdir -p storage/docs-temp/{$name}/{$alias} \
-                && cd storage/docs-temp/{$name}/{$alias} \
-                && rm -rf .git \
-                && git init \
-                && git config core.sparseCheckout true \
-                && echo "{$sparseCheckoutPath}" >> .git/info/sparse-checkout \
-                && git remote add -f origin https://{$accessToken}@github.com/{$repo}.git \
-                && git pull origin {$branch} \
-                && cp -r {$copySourcePath} ../../../docs/{$name}/{$alias}/ 2>/dev/null || true \
-                && echo "---\ntitle: {$alias}\ncategory: {$category}\nbranch: {$branch}\ngithubUrl: https://github.com/{$repo}\n---" > ../../../docs/{$name}/{$alias}/_index.md \
-                && cd {$cdPath} \
-                && find . -not -name '*.md' | cpio -pdm {$publicDocsAssetPath}/{$name}/{$alias}/ 2>/dev/null || true
+                set -e
+                rm -rf storage/docs/{$name}/{$alias}
+                mkdir -p storage/docs/{$name}/{$alias}
+                mkdir -p storage/docs-temp/{$name}/{$alias}
+                cd storage/docs-temp/{$name}/{$alias}
+                rm -rf .git
+                git init
+                git config core.sparseCheckout true
+                echo "{$sparseCheckoutPath}" >> .git/info/sparse-checkout
+                git remote add -f origin https://{$accessToken}@github.com/{$repo}.git
+                git pull origin {$branch}
+                cp -r {$copySourcePath} ../../../docs/{$name}/{$alias}/ 2>/dev/null || true
+                echo "---\ntitle: {$alias}\ncategory: {$category}\nbranch: {$branch}\ngithubUrl: https://github.com/{$repo}\n---" > ../../../docs/{$name}/{$alias}/_index.md
+                cd {$cdPath}
+                find . -not -name '*.md' | cpio -pdm {$publicDocsAssetPath}/{$name}/{$alias}/ 2>/dev/null || true
             BASH,
             base_path()
         )->setTimeout($this->timeout);
